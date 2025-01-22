@@ -12,8 +12,6 @@ namespace API.Controllers
     [ApiController]
     public class ProductsController(IGenericRepository<Product> repo) : ControllerBase
     {
-
-
         [HttpGet]
         public async Task<ActionResult<IReadOnlyList<Product>>> GetProducts(string? brand, string? type , string? sort)
         {
@@ -23,12 +21,12 @@ namespace API.Controllers
 
             return Ok(products);
         }
+
         [HttpGet("{id:int}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
             var product = await repo.GetByIdAsync(id);
              
-
             if (product == null) return NotFound();
 
             return product;
@@ -47,6 +45,7 @@ namespace API.Controllers
 
             return BadRequest("Problem creating product");
         }
+
         [HttpPut("{id:int}")]
         public async Task<ActionResult> UpdateProduct(int id, Product product)
         {
@@ -90,13 +89,13 @@ namespace API.Controllers
             var spec = new BrandListSpecification();
             return Ok(await repo.ListAsync(spec));
         }
+
         [HttpGet("types")]
         public async Task<ActionResult<IReadOnlyList<string>>> GetTypes()
         {
             //return Ok(await repo.GetTypesAsync());
             var spec = new TypeListSpecification();
             return Ok(await repo.ListAsync(spec));
-
         }
 
         private bool ProductExists(int id)

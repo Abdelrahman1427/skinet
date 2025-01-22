@@ -54,7 +54,6 @@ namespace Infrastructure.Data
                 };
 
             }
-
             return await query.ToListAsync();
         }
 
