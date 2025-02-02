@@ -6,6 +6,6 @@
 
         public string Message { get; set; } = message;
 
-        public string? Detials { get; set; } = details;       
+        public string? Details { get; set; } = details;       
     }
 }
