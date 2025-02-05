@@ -9,6 +9,8 @@ import { MatInput } from '@angular/material/input';
 
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatDivider } from '@angular/material/divider';
+import { CartService } from '../../../Core/services/cart.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-product-details',
@@ -20,7 +22,8 @@ import { MatDivider } from '@angular/material/divider';
     MatFormField,
     MatInput,
     MatLabel,
-    MatDivider
+    MatDivider,
+    FormsModule
   ],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.scss'
@@ -29,7 +32,10 @@ export class ProductDetailsComponent implements OnInit {
 
   private shopService = inject(ShopService);
   private activatedRout = inject(ActivatedRoute);
+  private cartService = inject(CartService);
   product?: Product;
+  quantityInCart = 0;
+  quantity = 1;
 
   ngOnInit(): void {
     this.loadProduct();
@@ -40,9 +46,34 @@ export class ProductDetailsComponent implements OnInit {
 
     if(!id) return; 
     this.shopService.getProduct(+id).subscribe({
-      next: product => this.product = product,
+    next: product => {
+      this.product = product
+      this.updateQuantityInCart();
+    },
       error : error => console.log(error)
 
     });
+  }
+  updateQuantityInCart(){
+    this.quantityInCart = this.cartService.cart()?.items
+      .find(x=>x.productId ===this.product?.id)?.quantity || 0;
+      
+    this.quantity = this.quantityInCart || 1;
+  }
+
+  getButtonText() {
+    return this.quantityInCart > 0 ? 'Update cart' : 'Add to cart';
+  }
+  updateCart(){
+    if (!this.product) return;
+    if (this.quantity > this.quantityInCart){
+      const itemToAdd = this.quantity- this.quantityInCart;
+      this.quantityInCart +=itemToAdd;
+      this.cartService.addItemToCart(this.product , itemToAdd);
+    }else{
+      const itemstoRemove = this.quantityInCart -this.quantity;
+      this.quantityInCart -=itemstoRemove;
+      this.cartService.removeItemFromcart(this.product.id , itemstoRemove)
+    }
   }
 }

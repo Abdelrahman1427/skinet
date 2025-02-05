@@ -29,6 +29,6 @@ export const appConfig: ApplicationConfig = {
       useFactory : initializeApp,
       multi: true,
       deps :[InitService]
-    }
+    } 
   ]
 };
