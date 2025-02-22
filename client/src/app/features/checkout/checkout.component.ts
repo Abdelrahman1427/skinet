@@ -4,7 +4,6 @@ import {MatStepperModule} from '@angular/material/stepper'
 import { RouterLink } from '@angular/router';
 import { MatButton } from '@angular/material/button';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
-
 import { StripeService } from '../../Core/services/stripe.service';
 import { StripeAddressElement } from '@stripe/stripe-js';
 import { SnacknbarService } from '../../Core/services/snackbar.service';
@@ -12,6 +11,7 @@ import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { Address } from '../../shared/models/user';
 import { firstValueFrom } from 'rxjs';
 import { AccountService } from '../../Core/services/account.service';
+import { CheckoutDeliveryComponent } from "./checkout-delivery/checkout-delivery.component";
 @Component({
   selector: 'app-checkout',
   standalone: true,
@@ -20,8 +20,9 @@ import { AccountService } from '../../Core/services/account.service';
     MatStepperModule,
     RouterLink,
     MatButton,
-    MatCheckboxModule
-  ],
+    MatCheckboxModule,
+    CheckoutDeliveryComponent
+],
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.scss'
 })
@@ -46,7 +47,10 @@ export class CheckoutComponent implements OnInit , OnDestroy {
       if(this.saveAddress){
         const address =  await this.getAddressFromStripeAddress();
         address && firstValueFrom(this.accountService.updateAddress(address));
-      }
+      } 
+    }
+    if(event.selectedIndex === 2){
+      await firstValueFrom(this.stripeService.createOrUpdatePaymentIntent());
     }
   }
   private async getAddressFromStripeAddress() : Promise<Address | null> {
